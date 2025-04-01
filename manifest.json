@@ -5,6 +5,6 @@
   "minAppVersion": "0.12.0",
   "description": "Enables reference-style Markdown links in reading mode and hides link definitions, like in Kramdown",
   "author": "njko39",
-  "authorUrl": "https://github.com/njko39/obsidian-reference-link-plugin",
+  "authorUrl": "https://github.com/njko39/",
   "isDesktopOnly": false
 }
