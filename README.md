@@ -2,7 +2,7 @@
 
 This plugin for [Obsidian](https://obsidian.md) adds support for reference-style Markdown links! Can be useful if you have a lot of links in the file :>
 
-Example:
+# Usage:
 
 ```markdown
 
