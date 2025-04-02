@@ -1,11 +1,22 @@
-# Toggle Image Visibility
+# Reference Link Plugin
 
-This plugin for [Obsidian](https://obsidian.md) adds a button into ribbon menu on the left to show or hide images in File Explorer
+This plugin for [Obsidian](https://obsidian.md) adds support for reference-style Markdown links! Can be useful if you have a lot of links in the file :>
 
-# Manual Installation
+Example:
 
-- plugin version: download `obsidian-image-hider` folder and drop it into your `\.obsidian\plugins\` folder
-- CSS snippet version: download `\obsidian-image-hider-css-snippet-ver\hide-images.css` and drop it in `\.obsidian\snippets\` folder
+```markdown
+
+A simple plugin for [Obsidian]. It does have [GitHub page]! 
+
+[//]: # (Comments & links:)
+
+[GitHub page]: https://github.com/njko39/obsidian-reference-link-plugin
+[Obsidian]: https://obsidian.md/
+```
+
+Will be displayed in reading mode as:
+
+A simple plugin for [Obsidian](https://obsidian.md/). It does have [GitHub page](https://github.com/njko39/obsidian-reference-link-plugin)! 
 
 # License
 

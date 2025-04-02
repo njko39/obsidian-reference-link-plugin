@@ -1,0 +1,10 @@
+{
+  "id": "reference-link-render",
+  "name": "Reference Link Render",
+  "version": "1.0.0",
+  "minAppVersion": "0.12.0",
+  "description": "Enables reference-style Markdown links in reading mode and hides link definitions, like in Kramdown",
+  "author": "njko39",
+  "authorUrl": "https://github.com/njko39/",
+  "isDesktopOnly": false
+}
