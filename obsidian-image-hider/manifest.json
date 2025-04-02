@@ -1,0 +1,10 @@
+{
+	"id": "toggle-image-visibility",
+	"name": "Toggle Image Visibility",
+	"version": "1.0.0",
+	"minAppVersion": "1.5.0",
+	"description": "Quickly show or hide image files (png, jpg, jpeg, webp, gif, bmp, svg) in Obsidian's File Explorer using a ribbon button.",
+	"author": "njko39",
+	"authorUrl": "https://github.com/njko39/",
+	"isDesktopOnly": false
+}

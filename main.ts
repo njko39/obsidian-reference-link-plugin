@@ -1,64 +1,86 @@
-import { Plugin, MarkdownPostProcessorContext } from "obsidian";
+import { Plugin, setIcon } from 'obsidian';
 
-export default class ReferenceLinkPlugin extends Plugin {
+// Interface for storing plugin settings
+interface PluginSettings {
+	isHidden: boolean;
+}
+
+// Default settings applied on first run
+const DEFAULT_SETTINGS: PluginSettings = {
+	isHidden: true,
+};
+
+export default class ToggleImageVisibilityPlugin extends Plugin {
+	private styleEl: HTMLStyleElement;
+	private settings: PluginSettings;
+	private ribbonIconEl: HTMLElement;
+
+	// Called when the plugin is loaded
 	async onload() {
-		this.registerMarkdownPostProcessor(this.handleReferenceLinks.bind(this));
+		await this.loadSettings();
+		this.initStyles();
+
+		this.ribbonIconEl = this.addRibbonIcon(
+			this.settings.isHidden ? 'eye-off' : 'eye',
+			this.settings.isHidden ? 'Show images' : 'Hide images',
+			() => {
+				this.toggleVisibility();
+			}
+		);
+		this.ribbonIconEl.addClass('image-visibility-toggle-button');
 	}
 
-	private async handleReferenceLinks(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
-		const references = new Map<string, string>();
+	// Called when the plugin is unloaded
+	async onunload() {
+		this.styleEl?.remove();
+	}
 
-		// Step 1: Collect reference-style link definitions
-		const definitionRegex = /^\[([^\]]+)\]:\s*(https?:\/\/[^\s<>"']+)/;
-		const blocksToRemove: HTMLElement[] = [];
+	// Loads settings from disk
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	}
 
-		Array.from(el.children).forEach((child) => {
-			if (child instanceof HTMLParagraphElement || child instanceof HTMLDivElement) {
-				const match = child.innerText.match(definitionRegex);
-				if (match) {
-					const [_, label, url] = match;
-					references.set(label, url);
-					blocksToRemove.push(child);
-				}
+	// Saves settings to disk
+	async saveSettings() {
+		await this.saveData(this.settings);
+	}
+
+	// Initializes CSS for hiding image files in File Explorer
+	initStyles() {
+		this.styleEl = document.createElement('style');
+		this.styleEl.textContent = `
+			.tree-item.nav-file:has(.tree-item-self[data-path$=".png"]),
+			.tree-item.nav-file:has(.tree-item-self[data-path$=".jpg"]),
+			.tree-item.nav-file:has(.tree-item-self[data-path$=".jpeg"]),
+			.tree-item.nav-file:has(.tree-item-self[data-path$=".webp"]),
+			.tree-item.nav-file:has(.tree-item-self[data-path$=".gif"]),
+			.tree-item.nav-file:has(.tree-item-self[data-path$=".bmp"]),
+			.tree-item.nav-file:has(.tree-item-self[data-path$=".svg"]) {
+				display: none !important;
 			}
-		});
+		`;
 
-		// Step 2: Remove blocks that contain link definitions
-		blocksToRemove.forEach((block) => block.remove());
+		// Apply styles immediately if images should be hidden
+		if (this.settings.isHidden) {
+			document.head.appendChild(this.styleEl);
+		}
+	}
 
-		// Step 3: Replace [Label] with <a> elements
-		const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-		const nodesToReplace: Text[] = [];
-
-		while (walker.nextNode()) {
-			const textNode = walker.currentNode as Text;
-			if (/\[([^\]]+)\]/.test(textNode.nodeValue || "")) {
-				nodesToReplace.push(textNode);
-			}
+	// Toggles visibility of image files
+	async toggleVisibility() {
+		if (this.settings.isHidden) {
+			// Show images
+			this.styleEl.remove();
+			this.ribbonIconEl.setAttribute('aria-label', 'Hide images');
+			setIcon(this.ribbonIconEl, 'eye');
+		} else {
+			// Hide images
+			document.head.appendChild(this.styleEl);
+			this.ribbonIconEl.setAttribute('aria-label', 'Show images');
+			setIcon(this.ribbonIconEl, 'eye-off');
 		}
 
-		nodesToReplace.forEach((textNode) => {
-			const parent = textNode.parentElement;
-			if (!parent) return;
-
-			const parts = (textNode.nodeValue || "").split(/(\[[^\]]+\])/g);
-			const frag = document.createDocumentFragment();
-
-			parts.forEach((part) => {
-				const match = part.match(/^\[([^\]]+)\]$/);
-				if (match && references.has(match[1])) {
-					const a = document.createElement("a");
-					a.href = references.get(match[1])!;
-					a.textContent = match[1];
-					a.target = "_blank";
-					a.rel = "noopener";
-					frag.appendChild(a);
-				} else {
-					frag.appendChild(document.createTextNode(part));
-				}
-			});
-
-			parent.replaceChild(frag, textNode);
-		});
+		this.settings.isHidden = !this.settings.isHidden;
+		await this.saveSettings();
 	}
 }

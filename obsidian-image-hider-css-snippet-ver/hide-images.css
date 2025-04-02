@@ -1,0 +1,10 @@
+/* Скрыть файлы с расширениями изображений по атрибуту data-path */
+.tree-item.nav-file:has(.tree-item-self[data-path$=".png"]),
+.tree-item.nav-file:has(.tree-item-self[data-path$=".jpg"]),
+.tree-item.nav-file:has(.tree-item-self[data-path$=".jpeg"]),
+.tree-item.nav-file:has(.tree-item-self[data-path$=".webp"]),
+.tree-item.nav-file:has(.tree-item-self[data-path$=".gif"]),
+.tree-item.nav-file:has(.tree-item-self[data-path$=".bmp"]),
+.tree-item.nav-file:has(.tree-item-self[data-path$=".svg"]) {
+    display: none !important;
+}
